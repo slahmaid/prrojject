@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
-import prisma from "@/src/server/db";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import prisma from "@/server/db";
 import { z } from "zod";
-import { getCurrentMonthKey, getUserMonthlyLimit } from "@/src/lib/plans";
+import { getCurrentMonthKey, getUserMonthlyLimit } from "@/lib/plans";
 
 export async function GET() {
 	const session = await getServerSession(authOptions as any);

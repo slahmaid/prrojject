@@ -2,8 +2,8 @@ import "../styles/globals.css";
 import { ReactNode } from "react";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
-import { SignOutButton, SignInLink } from "@/src/components/auth-buttons";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { SignOutButton, SignInLink } from "@/components/auth-buttons";
 
 export const metadata = {
 	title: "MVP App — Simple Bookmark Manager",

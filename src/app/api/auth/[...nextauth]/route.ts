@@ -2,10 +2,10 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import prisma from "@/src/server/db";
+import prisma from "@/server/db";
 import { compare } from "bcryptjs";
 import { z } from "zod";
-import { sendWelcomeEmail } from "@/src/server/email";
+import { sendWelcomeEmail } from "@/server/email";
 
 export const authOptions = {
 	adapter: PrismaAdapter(prisma),

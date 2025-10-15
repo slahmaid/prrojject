@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
-import { stripe, getOrCreateCustomer } from "@/src/server/stripe";
-import prisma from "@/src/server/db";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { stripe, getOrCreateCustomer } from "@/server/stripe";
+import prisma from "@/server/db";
 
 export async function POST() {
 	const session = await getServerSession(authOptions as any);

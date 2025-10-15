@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
-import prisma from "@/src/server/db";
-import ClientForm from "@/src/components/bookmark-form";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import prisma from "@/server/db";
+import ClientForm from "@/components/bookmark-form";
 
 export default async function DashboardPage() {
 	const session = await getServerSession(authOptions as any);
