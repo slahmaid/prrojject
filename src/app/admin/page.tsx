@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/server/auth";
 
 export default async function AdminPage() {
-	const session = await getServerSession(authOptions as any);
-	const role = (session?.user as any)?.role;
+	const session = (await getServerSession(authOptions as any)) as any;
+	const role = session?.user?.role;
 	if (!session || role !== "ADMIN") redirect("/");
 	return (
 		<div className="p-6">
