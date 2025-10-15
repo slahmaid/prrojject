@@ -1,0 +1,5 @@
+export const DEFAULT_LIMITS = {
+	FREE: 3,
+	PRO: 1000,
+	BUSINESS: 10000,
+};

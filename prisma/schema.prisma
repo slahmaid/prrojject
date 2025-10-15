@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Roles for RBAC
+enum Role {
+  USER
+  ADMIN
+}
+
+// Subscription lifecycle states we care about
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  passwordHash String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Auth relations (NextAuth)
+  accounts Account[]
+  sessions Session[]
+
+  // App relations
+  subscription Subscription?
+  bookmarks    Bookmark[]
+  // Track usage by month
+  usages Usage[]
+}
+
+// NextAuth Prisma Adapter models (compatible schema)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @map("refresh_token")
+  access_token      String?  @map("access_token")
+  expires_at        Int?     @map("expires_at")
+  token_type        String?  @map("token_type")
+  scope             String?
+  id_token          String?  @map("id_token")
+  session_state     String?  @map("session_state")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Paid plan the user can subscribe to
+model Plan {
+  id                   String   @id @default(cuid())
+  name                 String
+  slug                 String   @unique
+  priceCents           Int      // store in the smallest currency unit
+  currency             String   @default("usd")
+  monthlyBookmarkLimit Int?
+  features             Json?
+  stripePriceId        String?
+  stripeProductId      String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+// One subscription per user (for simplicity)
+model Subscription {
+  id                   String              @id @default(cuid())
+  userId               String              @unique
+  planId               String
+  status               SubscriptionStatus  @default(ACTIVE)
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean             @default(false)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+}
+
+// Track monthly usage per user (YYYY-MM)
+model Usage {
+  id                String   @id @default(cuid())
+  userId            String
+  month             String   // e.g. "2025-10"
+  bookmarksCreated  Int      @default(0)
+  lastUpdated       DateTime @updatedAt
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, month])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  url       String
+  title     String?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
