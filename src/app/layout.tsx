@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "./globals.css";
 import { ReactNode } from "react";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
